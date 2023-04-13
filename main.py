@@ -10,16 +10,7 @@ from datetime import date, datetime
 app = FastAPI()
 
 
-conn = psycopg2.connect("postgresql://username:<ENTER-SQL-USER-PASSWORD>@db-app-693.g8x.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full")
-
-@app.get("/")
-async def root():
-    with conn.cursor() as cur:
-        cur.execute("SELECT now()")
-        res = cur.fetchall()
-        conn.commit()
-        print(res)
-    return {"message": "Hello World"}
+conn = psycopg2.connect("postgresql://matheus:<ENTER-SQL-USER-PASSWORD>@db-app-693.g8x.cockroachlabs.cloud:26257/db-app?sslmode=require")
 
 # Modelo de dados de usuário
 class User(BaseModel):
@@ -37,6 +28,8 @@ class User(BaseModel):
     address: str = None
     created_at: datetime = None
     updated_at: datetime = None
+
+
 
 # Registro de usuário
 @app.post("/register/user")
@@ -60,7 +53,7 @@ async def register_user(user: User):
             sql.Literal(user.address)
         )
 
-        cur.execute(insert_query)
+        conn.cursor.execute(insert_query)
         conn.commit()
     except (ValidationError, Error) as e:
         raise HTTPException(status_code=400, detail=f"Erro ao registrar: {e}")
