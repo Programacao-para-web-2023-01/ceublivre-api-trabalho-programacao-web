@@ -163,6 +163,6 @@ async def edit_user(id: str, rg_type: bool, in_seller: Seller):
                   'address': row[11]}
         return information
     except Exception as error:
-            return "Error in seller information: {error}"
+            return "Error in seller information"
 
 """
