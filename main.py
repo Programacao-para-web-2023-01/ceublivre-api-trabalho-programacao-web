@@ -117,7 +117,7 @@ async def edit_user(id: str, edit_user: EditUser):
     except Exception as error:
             return f"Error in update: {error}"
         
-""" 
+
 # Verificação de informações do vendedor
 
 informacao_seller = 'SELECT full_name, cpf, email, birthday, cep, phone, address
@@ -164,5 +164,3 @@ async def edit_user(id: str, rg_type: bool, in_seller: Seller):
         return information
     except Exception as error:
             return "Error in seller information"
-
-"""
