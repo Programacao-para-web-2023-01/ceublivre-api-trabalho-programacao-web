@@ -71,6 +71,10 @@ def validate(user: User):
 
 
 
+@app.get("/")
+async def hello():
+    return {"Hello world"}
+
 
 # Registro de usuário
 @app.post("/users")
@@ -83,8 +87,8 @@ async def register_user(user: User):
         ).format(
             sql.Literal(user.id),
             sql.Literal(user.rg_type),
-            sql.Literal(user.name),
-            sql.Literal(user.gender),
+            sql.Literal(user.full_name),
+            sql.Literal(user.genero),
             sql.Literal(user.cpf),
             sql.Literal(user.email),
             sql.Literal(user.birthday),
