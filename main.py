@@ -10,7 +10,7 @@ import datetime
 app = FastAPI()
 
 
-conn = psycopg2.connect("postgresql://matheus:<ENTER-SQL-USER-PASSWORD>@db-app-693.g8x.cockroachlabs.cloud:26257/db-app?sslmode=require")
+conn = psycopg2.connect("postgresql://silvio:X7fY9_ZyXAI0PENauIDRXg@db-app-693.g8x.cockroachlabs.cloud:26257/db-app?sslmode=require")
 update_sql = 'UPDATE users set full_name = %s, genereo = %s, email = %s, password = %s, preferencia_comunicacao = %s, cep = %s, phone = %s, address, updated_at = %s WHERE id = %s'
 get_by_id_sql = 'SELECT * FROM users WHERE id = %s'
 
@@ -44,9 +44,38 @@ class EditUser(BaseModel):
     updated_at: datetime = None
 
 
+def validate(user: User):
+    if user.full_name == "":
+        return  "Insiera um nome"
+
+    if user.genero == "":
+        return "insira um genero"
+
+    if user.cpf == "":
+        return "Insira um cpf"
+    if user.phone == "":
+        return "Insira um telefone"
+
+    if user.address == "":
+        return "Insira um address"
+
+    if user.preferencia_comunicacao == "":
+        return "Insira um preferencia de comunicacao"
+
+    if user.email == "":
+        return "insira um email!"
+
+    if user.password == "":
+        return "Insira uma senha"
+
+
+
+
+
 # Registro de usuário
 @app.post("/users")
 async def register_user(user: User):
+    validate(user)
     try:
         # Inserir dados do usuário na tabela de usuários
         insert_query = sql.SQL(
@@ -117,50 +146,3 @@ async def edit_user(id: str, edit_user: EditUser):
     except Exception as error:
             return f"Error in update: {error}"
         
-
-# Verificação de informações do vendedor
-
-informacao_seller = 'SELECT full_name, cpf, email, birthday, cep, phone, address
-FROM users WHERE rg_type = 1 AND id = %s'
-
-class Seller(BaseModel):
-    full_name: str = None
-    cpf: str = None
-    email: str = None
-    birthday: date = None
-    cep: str = None
-    phone: str = None
-    address: str = None
-
-@app.put("/seller/{user_id}")
-async def edit_user(id: str, rg_type: bool, in_seller: Seller):
-    try:
-        conn.cursor().execute(informacao_seller, [id])
-        row[0] = conn.cursor().fetchone()
-        if row[0] is None:
-            raise HTTPException(status_code=404, detail="Seller not found")
-    return {"Seller": [id]}
-
-    try:
-        conn.cursor().execute(informacao_seller, [rg_type])
-        row[1] = conn.cursor().fetchone()
-        if row[1] = 0:
-            raise HTTPException(status_code=404, detail="User not Seller")
-    return {"Seller": [id]}
-
-    try:
-        conn.cursor().execute(informacao_seller)
-        conn.commit()
-        conn.cursor().close()
-        conn.close()
-        information = {'id': row[0], 
-                  'full_name': row[2], 
-                  'cpf': row[4], 
-                  'email':row[5], 
-                  'birthday': row[6], 
-                  'cep': row[9], 
-                  'phone': row[10], 
-                  'address': row[11]}
-        return information
-    except Exception as error:
-            return "Error in seller information"
