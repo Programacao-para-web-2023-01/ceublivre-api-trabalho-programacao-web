@@ -53,6 +53,7 @@ def validate(user: User):
 
     if user.cpf == "":
         return "Insira um cpf"
+    
     if user.phone == "":
         return "Insira um telefone"
 
@@ -70,11 +71,9 @@ def validate(user: User):
 
 
 
-
 @app.get("/")
 async def hello():
     return {"Hello world"}
-
 
 # Registro de usuário
 @app.post("/users")
@@ -121,15 +120,15 @@ async def edit_user(id: str, edit_user: EditUser):
     
     try:
         updated_user = EditUser(
-            full_name=edit_user.full_name,
-            genero=edit_user.genero,
-            email=edit_user.email,
+            full_name = edit_user.full_name,
+            genero = edit_user.genero,
+            email = edit_user.email,
             password = edit_user.password,
-            preferencia_comunicacao=edit_user.preferencia_comunicacao,
-            cep = edit_user.preferencia_comunicacao,
-            phone=edit_user.phone,
-            address=edit_user.address,
-            updated_at=datetime.datetime.now()
+            preferencia_comunicacao = edit_user.preferencia_comunicacao,
+            cep = edit_user.cep,
+            phone = edit_user.phone,
+            address = edit_user.address,
+            updated_at = datetime.datetime.now()
         )
         conn.cursor().execute(update_sql, (updated_user.full_name, updated_user.genero, updated_user.email, updated_user.password, updated_user.preferencia_comunicacao, updated_user.cep, updated_user.phone, updated_user.address, updated_user.updated_at))
         conn.commit()
@@ -143,7 +142,8 @@ async def edit_user(id: str, edit_user: EditUser):
                   'email':updated_user.email, 
                   'birthday': row[6], 
                   'preferencia_comunicacao': updated_user.preferencia_comunicacao, 
-                  'cep': updated_user.cep, 'address': updated_user.cep, 
+                  'cep': updated_user.cep, 
+                  'address': updated_user.address, 
                   'created_at': row[12], 
                   'updated_at': updated_user.updated_at }
         return result
