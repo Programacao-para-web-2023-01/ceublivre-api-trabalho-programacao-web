@@ -6,21 +6,23 @@ from psycopg2 import sql, Error
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel, EmailStr, ValidationError
 from datetime import date, datetime
-import datetime
+
+
 app = FastAPI()
 
-
-conn = psycopg2.connect("postgresql://silvio:X7fY9_ZyXAI0PENauIDRXg@db-app-693.g8x.cockroachlabs.cloud:26257/db-app?sslmode=require")
+conn = psycopg2.connect(
+    "postgresql://silvio:X7fY9_ZyXAI0PENauIDRXg@db-app-693.g8x.cockroachlabs.cloud:26257/db-app?sslmode=require")
 update_sql = 'UPDATE users set full_name = %s, genereo = %s, email = %s, password = %s, preferencia_comunicacao = %s, cep = %s, phone = %s, address, updated_at = %s WHERE id = %s'
 get_by_id_sql = 'SELECT * FROM users WHERE id = %s'
+
 
 # Modelo de dados de usuário
 class User(BaseModel):
     id: str
-    rg_type: bool = None #RG_Type = 1 = Vendedor || RG_Type = 0 = Usuario normal
+    rg_type: bool = None  # RG_Type = 1 = Vendedor || RG_Type = 0 = Usuario normal
     full_name: str = None
     genero: str = None
-    cpf: str = None 
+    cpf: str = None
     email: str = None
     birthday: date = None
     password: str = None
@@ -45,15 +47,14 @@ class EditUser(BaseModel):
 
 
 def validate(user: User):
-    if user.full_name == "":
-        return  "Insiera um nome"
+    if user.full_name:
+     return "Insiera um nome"
 
     if user.genero == "":
         return "insira um genero"
 
     if user.cpf == "":
         return "Insira um cpf"
-    
     if user.phone == "":
         return "Insira um telefone"
 
@@ -70,10 +71,10 @@ def validate(user: User):
         return "Insira uma senha"
 
 
-
 @app.get("/")
 async def hello():
     return {"Hello world"}
+
 
 # Registro de usuário
 @app.post("/users")
@@ -98,7 +99,8 @@ async def register_user(user: User):
             sql.Literal(user.address)
         )
 
-        conn.cursor.execute(insert_query)
+        cur = conn.cursor()
+        cur.execute(insert_query)
         conn.commit()
     except (ValidationError, Error) as e:
         raise HTTPException(status_code=400, detail=f"Erro ao registrar: {e}")
@@ -117,36 +119,37 @@ async def edit_user(id: str, edit_user: EditUser):
             raise Exception(f"user with ID {id} not found")
     except Exception as error:
         return str(error)
-    
+
     try:
         updated_user = EditUser(
-            full_name = edit_user.full_name,
-            genero = edit_user.genero,
-            email = edit_user.email,
-            password = edit_user.password,
-            preferencia_comunicacao = edit_user.preferencia_comunicacao,
-            cep = edit_user.cep,
-            phone = edit_user.phone,
-            address = edit_user.address,
-            updated_at = datetime.datetime.now()
+            full_name=edit_user.full_name,
+            genero=edit_user.genero,
+            email=edit_user.email,
+            password=edit_user.password,
+            preferencia_comunicacao=edit_user.preferencia_comunicacao,
+            cep=edit_user.preferencia_comunicacao,
+            phone=edit_user.phone,
+            address=edit_user.address,
+            updated_at=datetime.datetime.now()
         )
-        conn.cursor().execute(update_sql, (updated_user.full_name, updated_user.genero, updated_user.email, updated_user.password, updated_user.preferencia_comunicacao, updated_user.cep, updated_user.phone, updated_user.address, updated_user.updated_at))
+        conn.cursor().execute(update_sql, (
+        updated_user.full_name, updated_user.genero, updated_user.email, updated_user.password,
+        updated_user.preferencia_comunicacao, updated_user.cep, updated_user.phone, updated_user.address,
+        updated_user.updated_at))
         conn.commit()
         conn.cursor().close()
         conn.close()
-        result = {'id': row[0], 
+        result = {'id': row[0],
                   'rg_type': row[1],
-                  'full_name':updated_user.full_name, 
-                  'genero':updated_user.genero, 
-                  'cpf': row[4], 
-                  'email':updated_user.email, 
-                  'birthday': row[6], 
-                  'preferencia_comunicacao': updated_user.preferencia_comunicacao, 
-                  'cep': updated_user.cep, 
-                  'address': updated_user.address, 
-                  'created_at': row[12], 
-                  'updated_at': updated_user.updated_at }
+                  'full_name': updated_user.full_name,
+                  'genero': updated_user.genero,
+                  'cpf': row[4],
+                  'email': updated_user.email,
+                  'birthday': row[6],
+                  'preferencia_comunicacao': updated_user.preferencia_comunicacao,
+                  'cep': updated_user.cep, 'address': updated_user.cep,
+                  'created_at': row[12],
+                  'updated_at': updated_user.updated_at}
         return result
     except Exception as error:
-            return f"Error in update: {error}"
-        
+        return f"Error in update: {error}"
