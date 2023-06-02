@@ -12,7 +12,7 @@ app = FastAPI()
 
 conn = psycopg2.connect(
     "postgresql://silvio:X7fY9_ZyXAI0PENauIDRXg@db-app-693.g8x.cockroachlabs.cloud:26257/db-app?sslmode=require")
-update_sql = 'UPDATE users set full_name = %s, genereo = %s, email = %s, password = %s, preferencia_comunicacao = %s, cep = %s, phone = %s, address, updated_at = %s WHERE id = %s'
+update_sql = 'UPDATE users set full_name = %s, genereo = %s, email = %s, password = %s, preferencia_comunicacao = %s, cep = %s, phone = %s, address = %s, updated_at = %s WHERE id = %s'
 get_by_id_sql = 'SELECT * FROM users WHERE id = %s'
 
 
@@ -69,6 +69,8 @@ def validate(user: User):
 
     if user.password == "":
         return "Insira uma senha"
+    
+     return None
 
 
 @app.get("/")
