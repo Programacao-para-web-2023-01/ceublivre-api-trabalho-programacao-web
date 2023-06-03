@@ -28,3 +28,15 @@ corretas e em conformidade com as leis aplicáveis.
 **Total: 10 pontos**
 
 ---
+
+
+```bash
+login:
+	space login
+
+link:
+ 	space link
+
+build:
+	space push
+```
