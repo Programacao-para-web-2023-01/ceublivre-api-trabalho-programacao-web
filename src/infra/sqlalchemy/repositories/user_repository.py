@@ -86,4 +86,11 @@ class UserRepository:
                 await session.rollback()
                 print(f"Error ao atualizar no banco de dados: {str(error)}")
                 raise DatabaseError(f"Ocorreu um erro ao atualizar o usuário: {str(error)}")
+            
+    async def get(self, userId:str):
+            user = await selectValue(self.db, User, User.id, userId)
+            if not user:
+                 raise NotFoundError('Usuário não encontrado')
+            
+            return user
     

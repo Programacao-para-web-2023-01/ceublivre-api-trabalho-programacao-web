@@ -2,13 +2,15 @@ from fastapi import Depends, FastAPI, HTTPException
 from datetime import datetime
 from src.errors.errors import DatabaseError, DuplicateEntryError, NotFoundError
 
-from src.schemas.schemas import User, UpdateUser, PaymentsInformation, ReceiveInformation
+from src.schemas.schemas import User, UpdateUser, PaymentsInformation, ReceiveInformation, UpdatePaymentsInformation, UpdateReceiveInformation
 from src.core.database import check_database_connection
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.database import get_session
 from src.infra.sqlalchemy.repositories.user_repository import UserRepository
 from src.infra.sqlalchemy.repositories.payments_repository import PaymentRepository
 from src.infra.sqlalchemy.repositories.receive_repository import ReceiveRepository
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
 
 
@@ -54,6 +56,15 @@ async def hello():
     return {"Hello world"}
 
 
+@app.get("/user")
+async def get(userId: str, db: AsyncSession = Depends(get_session)):
+    try:
+        user = await UserRepository(db).get(userId)
+        return user
+    except NotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error))
+    
+
 # Registro de usuário
 @app.post("/users")
 async def create(user: User, db: AsyncSession = Depends(get_session)):
@@ -76,6 +87,15 @@ async def update(updateUser: UpdateUser, userId:str, db: AsyncSession = Depends(
         raise HTTPException(status_code=500, detail=str(error))
 
 
+@app.get("/users/{userId}/paymentInformation")
+async def get(userId:str, db: AsyncSession = Depends(get_session)):
+    try:
+        paymentInformation = await PaymentRepository(db).get(userId)
+        return paymentInformation
+    
+    except NotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error))
+
 @app.post("/users/{userId}/paymentInformation")
 async def create(paymentInformation: PaymentsInformation, userId:str, db: AsyncSession = Depends(get_session)):
     try:
@@ -88,6 +108,27 @@ async def create(paymentInformation: PaymentsInformation, userId:str, db: AsyncS
         raise HTTPException(status_code=406, detail=str(error))
     except DatabaseError as error:
         raise HTTPException(status_code=500, detail=str(error))
+    
+@app.put("/users/{userId}/paymentInformation")
+async def update(updatePaymentInformation: UpdatePaymentsInformation,  userId:str, db: AsyncSession = Depends(get_session)):
+    try:
+        await PaymentRepository(db).updatePaymentInformation(userId, updatePaymentInformation)
+        return "Informações de pagamento atualizadas com sucesso"
+    
+    except NotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error))
+    except DatabaseError as error:
+        raise HTTPException(status_code=500, detail=str(error))
+
+
+
+@app.get("/users/{userId}/receiveInformation")
+async def get(userId:str, db: AsyncSession = Depends(get_session)):
+    try:
+        receiveInformation = await ReceiveRepository(db).get(userId)
+        return receiveInformation
+    except NotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error))
 
 
 @app.post("/users/{userId}/receiveInformation")
@@ -100,6 +141,18 @@ async def create(receiveInformation: ReceiveInformation, userId:str, db: AsyncSe
         raise HTTPException(status_code=404, detail=str(error))
     except DuplicateEntryError as error:
         raise HTTPException(status_code=406, detail=str(error))
+    except DatabaseError as error:
+        raise HTTPException(status_code=500, detail=str(error))
+
+
+@app.put("/users/{userId}/receiveInformation")
+async def create(updateReceiveInformation: UpdateReceiveInformation, userId:str, db: AsyncSession = Depends(get_session)):
+    try:
+        await ReceiveRepository(db).updateReceiveInformation(userId, updateReceiveInformation)
+        return "informações de recebimento atualizadas com sucesso"
+        
+    except NotFoundError as error:
+        raise HTTPException(status_code=404, detail=str(error))
     except DatabaseError as error:
         raise HTTPException(status_code=500, detail=str(error))
 
