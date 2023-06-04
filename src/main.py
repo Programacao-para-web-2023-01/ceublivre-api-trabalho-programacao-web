@@ -9,8 +9,7 @@ from src.core.database import get_session
 from src.infra.sqlalchemy.repositories.user_repository import UserRepository
 from src.infra.sqlalchemy.repositories.payments_repository import PaymentRepository
 from src.infra.sqlalchemy.repositories.receive_repository import ReceiveRepository
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+
 
 
 
