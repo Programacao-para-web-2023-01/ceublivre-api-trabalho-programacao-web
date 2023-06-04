@@ -8,7 +8,7 @@ from src.core.configs import settings
 
 
 
-engine: AsyncEngine = create_async_engine(settings.DB_URL)
+engine: AsyncEngine = create_async_engine("cockroachdb+asyncpg://silvio:X7fY9_ZyXAI0PENauIDRXg@db-app-693.g8x.cockroachlabs.cloud:26257/db-app-v7")
 
 Session: AsyncSession = sessionmaker(
     autocommit=False ,

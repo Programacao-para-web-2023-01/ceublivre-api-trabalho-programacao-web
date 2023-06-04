@@ -30,13 +30,9 @@ corretas e em conformidade com as leis aplicáveis.
 ---
 
 
-```bash
-login:
-	space login
 
-link:
- 	space link
+### URL API
+https://ceublivreapi-1-n3530025.deta.app
 
-build:
-	space push
-```
+### Para acessar todos os endpoints
+https://ceublivreapi-1-n3530025.deta.app/docs
