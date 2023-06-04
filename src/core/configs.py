@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from sqlalchemy.ext.declarative import declarative_base
 load_dotenv()
 class Settings(BaseSettings):
-    DB_URL = os.getenv("DB_URL")
+    DB_URL: str = os.getenv("DB_URL")
     DBBaseModel = declarative_base()
 
     class Config:
