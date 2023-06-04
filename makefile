@@ -1,4 +1,4 @@
 start:
-	python3 -m uvicorn src.server:app --reload
+	python3 -m uvicorn main:app --reload
 
 .PHONY: start
