@@ -1,8 +1,9 @@
+from sqlalchemy import update
 from src.schemas import schemas
 from src.infra.sqlalchemy.models.models import User
 from src.dto.dto import CreateUserOutput
-from src.utils.utils import value_exists
-from src.errors.errors import DuplicateEntryError, DatabaseError
+from src.utils.utils import value_exists, selectValue
+from src.errors.errors import DuplicateEntryError, DatabaseError, NotFoundError
 from src.core.hash import hash_password
 from datetime import datetime
 import uuid
@@ -58,3 +59,31 @@ class UserRepository:
             await session.rollback()
             print(f"Error ao inserir no banco de dados: {str(error)}")
             raise DatabaseError(f"Ocorreu um erro ao adicionar o usuário: {str(error)}")
+    
+    async def update(self, userId:str, updateSchema: schemas.UpdateUser):
+        async with self.db as session:
+            userExists = await selectValue(self.db, User, User.id, userId)
+            if not userExists:
+                 raise NotFoundError('Usuário não encontrado')
+            hashPassword = hash_password(updateSchema.senha)
+
+            
+            query = update(User).where(User.id == userId).values(
+                nome_completo=updateSchema.nome_completo,
+                genero=updateSchema.genero,
+                email=updateSchema.email,
+                senha=hashPassword,
+                preferencia_comunicacao=updateSchema.preferencia_comunicacao,
+                cep=updateSchema.cep,
+                telefone=updateSchema.telefone,
+                endereco=updateSchema.endereco,
+                updated_at = datetime.now()
+            )
+            try:
+                 await session.execute(query)
+                 await session.commit()
+            except Exception as error:
+                await session.rollback()
+                print(f"Error ao atualizar no banco de dados: {str(error)}")
+                raise DatabaseError(f"Ocorreu um erro ao atualizar o usuário: {str(error)}")
+    

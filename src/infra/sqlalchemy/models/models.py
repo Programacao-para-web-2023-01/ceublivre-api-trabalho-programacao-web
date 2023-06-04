@@ -38,7 +38,7 @@ class ReceiveInformation(settings.DBBaseModel):
     id : str = Column(String(250), primary_key=True)
     conta_corrente: str = Column(String(250), nullable=False)
     banco: str = Column(String(250), nullable=False)
-    agencia: int = Column(Integer, nullable=False)
+    agencia: str = Column(String(250), nullable=False)
     user_id = Column(String(250), ForeignKey("users.id"), nullable=False)
     user = relationship(User, backref='dados_bancarios_recebimento')
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
