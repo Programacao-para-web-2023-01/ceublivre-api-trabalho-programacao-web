@@ -4,3 +4,5 @@ micros:
     src: .
     engine: python3.9
     dev: .venv/bin/uvicorn main:app --reload
+    public: true
+                
