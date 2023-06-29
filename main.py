@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, HTTPException
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 from src.errors.errors import DatabaseError, DuplicateEntryError, NotFoundError
 
 from src.schemas.schemas import User, UpdateUser, PaymentsInformation, ReceiveInformation, UpdatePaymentsInformation, UpdateReceiveInformation
@@ -14,6 +15,16 @@ from src.infra.sqlalchemy.repositories.receive_repository import ReceiveReposito
 
 
 app = FastAPI()
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.on_event("startup")
 async def startup_event():
